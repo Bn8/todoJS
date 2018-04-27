@@ -59,6 +59,11 @@ Todo list elements
     overflow:hidden; /* this is what solved the 100% width not completing exactly to the remainder of the parent because of other div to the left */
 }
 
+.txt:empty:before {
+    content:attr(data-placeholder);
+    color:rgb(173, 180, 162)
+}
+
 .todo {
     display: flex;
     flex-direction: row; 

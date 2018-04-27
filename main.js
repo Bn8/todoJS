@@ -6,8 +6,8 @@ function addTodo() {
     var div = $('<div class="todo"></div>');
     var divider = $('<div class="todo-divider"></div>');
     var checkdone = $('<input class="checkdone" type="checkbox"></input>');
-    var txt = $('<div class="txt" contenteditable="true">&nbsp</div>');
-    ;
+    var txt = $('<div class="txt" contenteditable="true" data-placeholder="write your task here"></div>');
+    
     badd.before(div.append(checkdone).append(txt));
     badd.before(divider);
 }
