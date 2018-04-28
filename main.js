@@ -1,14 +1,16 @@
 
-
 var badd = $("#b-add");
 var bsave = $("#save");
 var bload = $("#load");
+var bfilter = $("#filter");
+
+var filter_flag = 0;
 
 function addTodo(todotext) {
     var div = $('<div class="todo"></div>');
-    var divider = $('<div class="todo-divider"></div>');
+    var divider = $('<div class="todo-divider" tabindex="-1"></div>');
     var checkdone = $('<input class="checkdone" type="checkbox"></input>');
-    var txt = $('<div class="txt" contenteditable="true" data-placeholder="write your task here"></div>');
+    var txt = $('<div class="txt" tabindex="1" contenteditable="true" data-placeholder="write your task here"></div>');
     
     if (todotext != undefined) {
         txt.append(String(todotext));
@@ -32,7 +34,6 @@ function save() {
     $('.txt').each(function (indexInArray, valueOfElement) { 
         alltexts.push($(this).text());
     });
-    //alert(alltexts);
     setCookie("todo-list", alltexts, 1);
 }
 
@@ -41,6 +42,25 @@ function load() {
     alltexts.split(",").forEach(element => {
         addTodo(element);
     });
+}
+
+function filter() {
+    var disable_filter = filter_flag == 1 ? true : false;
+
+    $('.todo').each(function (indexInArray, valueOfElement) { 
+        setFilterHidden($(this), disable_filter);
+    });
+
+    filter_flag = 1 - filter_flag;
+}
+
+function setFilterHidden(todo, disable_filter) {
+    var checkbox = $(todo.children()[0]);
+    if(disable_filter) {
+        todo.show();
+    } else if(checkbox.is(':checked')) {
+        todo.hide();
+    }
 }
 
 function setCookie(cname, cvalue, exdays) {
@@ -78,4 +98,5 @@ jQuery(document).ready(function () {
 
     bsave.click(function () { save(); });
     bload.click(function () { load(); });
+    bfilter.click(function () { filter(); });
 });

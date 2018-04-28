@@ -48,12 +48,8 @@ Mine
 /**************************************
 Todo list elements
 **************************************/
-.checkdone{
-    margin-right: 5px;
-}
 
 .txt{
-    /* border: 1px solid rgb(28, 247, 137);    */
     overflow-wrap: break-word;
     width:100%;
     overflow:hidden; /* this is what solved the 100% width not completing exactly to the remainder of the parent because of other div to the left */
@@ -67,9 +63,7 @@ Todo list elements
 .todo {
     display: flex;
     flex-direction: row; 
-
     padding: 5px;
-    /* border: 1px solid rgb(65, 217, 255);    */
 }
 
 .todo:hover {
@@ -77,9 +71,24 @@ Todo list elements
     cursor: text;
 }
 
-.todo#last {
-    background-color: rgb(25, 104, 104);
+
+/**************************************
+Checkbox 
+**************************************/
+.checkdone {
+    margin-right: 5px;
 }
+
+/* on checking, influence the next txt element */
+.checkdone:checked + .txt { 
+    text-decoration: line-through;
+    color: rgb(115, 119, 50);
+}
+
+
+/**************************************
+Add new element button
+**************************************/
 
 #b-add {
 	background-color:#00aeff;
@@ -105,7 +114,6 @@ Todo list elements
     background: #3cb0fd;
     text-decoration: none;
 }
-
 
 
 /**************************************
