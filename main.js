@@ -1,6 +1,4 @@
 
-include(["/cookies.js"], null);
-
 var badd = $("#b-add");
 var bsave = $("#save");
 var bload = $("#load");
@@ -11,6 +9,8 @@ var todolist = $("#todolist");
 var cookie_expire_days = 1;
 
 var filter_flag = 0;
+
+/**************************** todo ****************************/
 
 function addTodo(todotext) {
     var div = $('<div class="todo"></div>');
@@ -29,6 +29,8 @@ function addTodo(todotext) {
     //badd.before(divider);
 }
 
+/**************************** UI interact ****************************/
+
 function setTextareaAutoResize() {
     $('textarea').each(function () {
         this.setAttribute('style', 'height:' + (this.scrollHeight) + 'px;overflow-y:hidden;');
@@ -38,6 +40,7 @@ function setTextareaAutoResize() {
     });
 }
 
+/**************************** save/load ****************************/
 
 /**
  * V3 - same as V2 but add the default "checked" when we save a checked checkbox, because whats the point of checking a checkbox if saving doesnt checks the checkboxing checkbox.
@@ -62,6 +65,7 @@ function load() {
     $("#todolist").html(dom_todo); // append or html (=inner replaceWith), can add this to user configuration or make popup to ask "r u sure?"
 } 
 
+/**************************** filter ****************************/
 
 function filter() {
     var disable_filter = filter_flag == 1 ? true : false;
@@ -82,6 +86,8 @@ function setFilterHidden(todo, disable_filter) {
     }
 }
 
+/**************************** main ****************************/
+
 // once document loaded completely 
 jQuery(document).ready(function () {
     setTextareaAutoResize();    
@@ -98,32 +104,27 @@ jQuery(document).ready(function () {
 });
 
 
+/**************************** cookies ****************************/
 
-/**
-* https://gist.github.com/Fluidbyte/3859578
-* Simple JS Include Function
-* Format:   include({array_files},{callback});
-* Example:  include(['script1.js','script2.js'],function(){ alert('Loaded!'); });
-*/
+function setCookie(cname, cvalue, exdays) {
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays*24*60*60*1000));
+    var expires = "expires="+ d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
 
-function include(array, callback) {
-    var loader = function (src, handler) {
-        var script = document.createElement("script");
-        script.src = src;
-        script.onload = script.onreadystatechange = function () {
-            script.onreadystatechange = script.onload = null;
-            handler();
-        };
-        var head = document.getElementsByTagName("head")[0];
-        (head || document.body).appendChild(script);
-    };
-    (function () {
-        if (array.length !== 0) {
-            loader(array.shift(), arguments.callee);
-        } else {
-            if (callback && typeof (callback) === 'function') {
-                callback();
-            }
+function getCookie(cname) {
+    var name = cname + "=";
+    var decodedCookie = decodeURIComponent(document.cookie);
+    var ca = decodedCookie.split(';');
+    for(var i = 0; i <ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
         }
-    })();
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
 }
