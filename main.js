@@ -1,12 +1,5 @@
 
-$.when(
-    $.getScript( "/cookies.js" ),
-    $.Deferred(function( deferred ){
-        $( deferred.resolve );
-    })
-).done(function(){
-    // finished loading all scripts
-});
+include(["/cookies.js"], null);
 
 var badd = $("#b-add");
 var bsave = $("#save");
@@ -103,3 +96,34 @@ jQuery(document).ready(function () {
     bload.click(function () { load(); });
     bfilter.click(function () { filter(); });
 });
+
+
+
+/**
+* https://gist.github.com/Fluidbyte/3859578
+* Simple JS Include Function
+* Format:   include({array_files},{callback});
+* Example:  include(['script1.js','script2.js'],function(){ alert('Loaded!'); });
+*/
+
+function include(array, callback) {
+    var loader = function (src, handler) {
+        var script = document.createElement("script");
+        script.src = src;
+        script.onload = script.onreadystatechange = function () {
+            script.onreadystatechange = script.onload = null;
+            handler();
+        };
+        var head = document.getElementsByTagName("head")[0];
+        (head || document.body).appendChild(script);
+    };
+    (function () {
+        if (array.length !== 0) {
+            loader(array.shift(), arguments.callee);
+        } else {
+            if (callback && typeof (callback) === 'function') {
+                callback();
+            }
+        }
+    })();
+}
