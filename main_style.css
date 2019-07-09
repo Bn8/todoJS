@@ -130,3 +130,23 @@ Properties apply to multiple elements
     -ms-user-select: none;
     user-select: none; 
 }
+
+
+/**************************************
+Expiration text box
+**************************************/
+
+.expiration {
+    text-align: center;
+}
+
+.text_input {
+    border: 0;
+    outline: 0;
+    color: yellow;
+    background: transparent;
+    text-align: center;
+    border-bottom: 2px solid teal;
+    width: 30px;
+}
+

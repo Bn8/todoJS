@@ -4,6 +4,8 @@ var bsave = $("#save");
 var bload = $("#load");
 var bfilter = $("#filter");
 
+var inp_expire_days = $("#expiration_days");
+
 var todolist = $("#todolist");
 
 var cookie_expire_days = 1;
@@ -31,6 +33,10 @@ function addTodo(todotext) {
 
 /**************************** UI interact ****************************/
 
+/**
+ * originally wanted to do that with only html/css but it proved annoyingly complex.
+ * so this script will just modify the text area to resize and fill elegantly with the textual content.
+ */
 function setTextareaAutoResize() {
     $('textarea').each(function () {
         this.setAttribute('style', 'height:' + (this.scrollHeight) + 'px;overflow-y:hidden;');
@@ -39,6 +45,8 @@ function setTextareaAutoResize() {
         this.style.height = (this.scrollHeight) + 'px';
     });
 }
+
+
 
 /**************************** save/load ****************************/
 
@@ -54,15 +62,22 @@ function save() {
             checkbox.attr('checked', true);
         }
     });
-    var alltexts = $("#todolist").html();
-    setCookie("todo-list", alltexts, cookie_expire_days);
+    var alltexts = todolist.html();
+    // we'll save the expiration days just as a number prepending the actual todo
+    var expire_days = inp_expire_days.val();
+    alltexts = expire_days + alltexts;
+    
+    setCookie("todo-list", alltexts, expire_days);
 }
 
 function load() {
     var alltexts = getCookie("todo-list");
     if(alltexts === ""){ return; } // no cookie
+    arr = alltexts.split(/^[^\d]*(\d+)/); // find the first numeric and split the rest out of it
+    inp_expire_days.val(arr[1]);
+    alltexts = arr[2];
     var dom_todo = $.parseHTML(alltexts);
-    $("#todolist").html(dom_todo); // append or html (=inner replaceWith), can add this to user configuration or make popup to ask "r u sure?"
+    todolist.html(dom_todo); // append or html (=inner replaceWith), can add this to user configuration or make popup to ask "r u sure?"
 } 
 
 /**************************** filter ****************************/
@@ -92,17 +107,40 @@ function setFilterHidden(todo, disable_filter) {
 jQuery(document).ready(function () {
     setTextareaAutoResize();    
 
-    //var iDiv = document.createElement('div');
     badd.click(function () {
         addTodo();
     });
 
-
     bsave.click(function () { save(); });
     bload.click(function () { load(); });
     bfilter.click(function () { filter(); });
-});
 
+    // callbacks for moving todos around
+    /*todolist[0].onmousemove = todolistDrag;
+    todolist[0].onmousedown = todolistMousedown;
+    todolist[0].onmouseup = todolistMouseup;*/
+
+});
+/*
+var drag_target = null;
+function todolistDrag(e) {
+    //console.log(e.target); // target, clientX, clientY
+    if(drag_target != null) {
+        drag_target.parentNode.style.top = e.clientY + 'px';
+        console.log(drag_target.parentNode.style.top); 
+    }
+}
+
+function todolistMousedown(e) {
+    if(e.target.className === 'txt') {
+        console.log(e.clientX, e.clientY);
+        drag_target = e.target;
+        drag_target.parentNode.outerHTML = "";
+    }
+}
+function todolistMouseup(e) {
+    drag_target = null;
+}*/
 
 /**************************** cookies ****************************/
 
