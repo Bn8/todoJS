@@ -66,18 +66,24 @@ function save() {
     // we'll save the expiration days just as a number prepending the actual todo
     var expire_days = inp_expire_days.val();
     alltexts = expire_days + alltexts;
+    //console.log("[save] cookie text: " + alltexts);
     
     setCookie("todo-list", alltexts, expire_days);
 }
 
 function load() {
     var alltexts = getCookie("todo-list");
+    
     if(alltexts === ""){ return; } // no cookie
     arr = alltexts.split(/^[^\d]*(\d+)/); // find the first numeric and split the rest out of it
     inp_expire_days.val(arr[1]);
     alltexts = arr[2];
     var dom_todo = $.parseHTML(alltexts);
     todolist.html(dom_todo); // append or html (=inner replaceWith), can add this to user configuration or make popup to ask "r u sure?"
+
+    // set filter defaulted to show everything when we load
+    filter_flag = 1;
+    filter();
 } 
 
 /**************************** filter ****************************/
@@ -148,14 +154,18 @@ function setCookie(cname, cvalue, exdays) {
     var d = new Date();
     d.setTime(d.getTime() + (exdays*24*60*60*1000));
     var expires = "expires="+ d.toUTCString();
+    cvalue = escape(cvalue);
     document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    //console.log("[set cookie] " + document.cookie);
 }
 
 function getCookie(cname) {
     var name = cname + "=";
-    var decodedCookie = decodeURIComponent(document.cookie);
-    var ca = decodedCookie.split(';');
+    //var decodedCookie = decodeURIComponent(document.cookie); 
+    //console.log("[get cookie] " + document.cookie);
+    var ca = document.cookie.split(';');
     for(var i = 0; i <ca.length; i++) {
+        ca[i] = unescape(ca[i]);
         var c = ca[i];
         while (c.charAt(0) == ' ') {
             c = c.substring(1);
