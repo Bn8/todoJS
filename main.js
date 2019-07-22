@@ -12,9 +12,13 @@ var cookie_expire_days = 1;
 
 var filter_flag = 0;
 
+
+var delimeter_todos = "#";
+var delimeter_values = ",";
+
 /**************************** todo ****************************/
 
-function addTodo(todotext) {
+function addTodo(todotext, check=false) {
     var div = $('<div class="todo"></div>');
     var divider = $('<div class="todo-divider" tabindex="-1"></div>');
     var checkdone = $('<input class="checkdone" type="checkbox"></input>');
@@ -26,9 +30,8 @@ function addTodo(todotext) {
 
     todolist.append(div.append(checkdone).append(txt));
     todolist.append(divider);
-
-    //badd.before(div.append(checkdone).append(txt));
-    //badd.before(divider);
+    
+    if(check) {checkdone.prop('checked', true); }
 }
 
 /**************************** UI interact ****************************/
@@ -48,38 +51,72 @@ function setTextareaAutoResize() {
 
 
 
-/**************************** save/load ****************************/
+/**************************** serialization ****************************/
 
-/**
- * V3 - same as V2 but add the default "checked" when we save a checked checkbox, because whats the point of checking a checkbox if saving doesnt checks the checkboxing checkbox.
- * security risk from V2 applies here as well.
- */
-function save() {
-    // this actually sets an HTML attribute to specifically be checked="checked" because otherwise its hidden for some reason probably versioning
+/*
+* delimeted by "#" for new todo and "," for each value within todos
+*/
+function serializeTODO() {
+   var s="";
     $(".todo").each(function() {
         var checkbox =  $(this).find('.checkdone');
-        if(checkbox.is(':checked')) { // yes this is weird solution but a simple one
-            checkbox.attr('checked', true);
+        var txt =  $(this).find('.txt');
+        if(s!="") { // for the delimeter but not at the beginning (and wont happen at the end)
+            s += delimeter_todos;
         }
+        if(checkbox.is(':checked')) {
+            s+="X";
+        } else {
+            s+="O";
+        }
+        s += delimeter_values;
+        s += escape(txt.text());
     });
-    var alltexts = todolist.html();
+    console.log(s);
+
+    return s;
+    
+}
+
+function unserializeTODO(s) {
+    todolist.empty();
+    s.split(delimeter_todos).forEach(element => {
+        vals = element.split(delimeter_values);
+        var val_checkbox = vals[0];
+        var val_txt = unescape(vals[1]);
+        console.log(val_checkbox == "X" ? true : false);
+        
+        addTodo(val_txt,val_checkbox == "X" ? true : false);
+    });
+}
+
+/**************************** save/load ****************************/
+
+
+function save() {
+    var serialized_todo = serializeTODO();
     // we'll save the expiration days just as a number prepending the actual todo
     var expire_days = inp_expire_days.val();
-    alltexts = expire_days + alltexts;
-    //console.log("[save] cookie text: " + alltexts);
-    
-    setCookie("todo-list", alltexts, expire_days);
+
+    setCookie("todo-list", expire_days + serialized_todo, expire_days);
+
 }
 
 function load() {
     var alltexts = getCookie("todo-list");
     
     if(alltexts === ""){ return; } // no cookie
+    console.log(alltexts);
+    
+    // cookie expire days extract
     arr = alltexts.split(/^[^\d]*(\d+)/); // find the first numeric and split the rest out of it
     inp_expire_days.val(arr[1]);
+
+    // rest of cookie
     alltexts = arr[2];
-    var dom_todo = $.parseHTML(alltexts);
-    todolist.html(dom_todo); // append or html (=inner replaceWith), can add this to user configuration or make popup to ask "r u sure?"
+    //var dom_todo = $.parseHTML(alltexts);
+    //todolist.html(dom_todo); // append or html (=inner replaceWith), can add this to user configuration or make popup to ask "r u sure?"
+    unserializeTODO(arr[2]);
 
     // set filter defaulted to show everything when we load
     filter_flag = 1;
@@ -90,6 +127,9 @@ function load() {
 
 function filter() {
     var disable_filter = filter_flag == 1 ? true : false;
+    
+    if(!disable_filter) bfilter.css('border', '0.8px solid yellow');
+    else bfilter.css('border', '0.8px solid black');
 
     $('.todo').each(function (indexInArray, valueOfElement) { 
         setFilterHidden($(this), disable_filter);

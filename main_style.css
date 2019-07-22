@@ -24,6 +24,7 @@ Mine
     text-align-last: center;
     margin: 5px;
     border-radius: 20px;
+    border: 0.8px solid black;
     display: inline-block;
     position: relative;
     outline: none;
