@@ -54,6 +54,7 @@ Todo list elements
     overflow-wrap: break-word;
     width:100%;
     overflow:hidden; /* this is what solved the 100% width not completing exactly to the remainder of the parent because of other div to the left */
+    white-space: pre; /* white spaces will be shown and not turn to divs */
 }
 
 .txt:empty:before {

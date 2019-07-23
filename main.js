@@ -1,20 +1,20 @@
-
+// html buttons
 var badd = $("#b-add");
 var bsave = $("#save");
 var bload = $("#load");
 var bfilter = $("#filter");
 
+// html other parts
 var inp_expire_days = $("#expiration_days");
-
 var todolist = $("#todolist");
 
+// js variables
 var cookie_expire_days = 1;
-
 var filter_flag = 0;
 
-
-var delimeter_todos = "#";
-var delimeter_values = ",";
+// js consts
+const delimeter_todos = "#";
+const delimeter_values = ",";
 
 /**************************** todo ****************************/
 
@@ -54,8 +54,10 @@ function setTextareaAutoResize() {
 /**************************** serialization ****************************/
 
 /*
+* saving and loading done via cookie where its value is serialized of the TODO list
 * delimeted by "#" for new todo and "," for each value within todos
 */
+
 function serializeTODO() {
    var s="";
     $(".todo").each(function() {
@@ -90,7 +92,9 @@ function unserializeTODO(s) {
     });
 }
 
-/**************************** save/load ****************************/
+/**************************** buttons callback ****************************/
+
+/***** save/load ****************************/
 
 
 function save() {
@@ -123,7 +127,7 @@ function load() {
     filter();
 } 
 
-/**************************** filter ****************************/
+/****** filter ****************************/
 
 function filter() {
     var disable_filter = filter_flag == 1 ? true : false;
@@ -189,6 +193,8 @@ function todolistMouseup(e) {
 }*/
 
 /**************************** cookies ****************************/
+// (copy pasta in case of future development. could be done more simple)
+// note we use escape/unescape to encapsulate the data because we dont want special character ";" inside the cookie. whatever, we're not on 1mb system.
 
 function setCookie(cname, cvalue, exdays) {
     var d = new Date();
